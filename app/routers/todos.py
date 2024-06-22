@@ -1,21 +1,13 @@
 from typing import List
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, HTTPException
 
+from ..models.todos import Todo
 
-class Todo(BaseModel):
-    id: int = Field(gt=0)
-    text: str = Field(min_length=1, max_length=100)
-    completed: bool = Field(default=False)
-
-
-app = FastAPI()
-
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
+router = APIRouter(
+    prefix="/todos",
+    # tags=["items"],
+    # responses={404: {"description": "Not found"}},
+)
 
 todosMock: List[Todo] = [
     Todo(id=1, text="Buy milk", completed=False),
@@ -26,12 +18,12 @@ todosMock: List[Todo] = [
 ]
 
 
-@app.get("/todos")
+@router.get("/")
 async def get_todos() -> List[Todo]:
     return todosMock
 
 
-@app.get("/todos/{todo_id}")
+@router.get("/{todo_id}")
 async def get_todo_by_id(todo_id: int) -> Todo | dict[str, str]:
     for todo in todosMock:
         if todo.id == todo_id:
@@ -39,13 +31,13 @@ async def get_todo_by_id(todo_id: int) -> Todo | dict[str, str]:
     raise HTTPException(status_code=404, detail="Todo not found")
 
 
-@app.post("/todos")
+@router.post("")
 async def create_todo(todo: Todo) -> Todo:
     todosMock.append(todo)
     return todo
 
 
-@app.put("/todos/{todo_id}")
+@router.put("/{todo_id}")
 async def update_todo_by_id(todo_id: int, todo: Todo) -> Todo | dict[str, str]:
     for index, t in enumerate(todosMock):
         if t.id == todo_id:
@@ -54,7 +46,7 @@ async def update_todo_by_id(todo_id: int, todo: Todo) -> Todo | dict[str, str]:
     raise HTTPException(status_code=404, detail="Todo not found")
 
 
-@app.delete("/todos/{todo_id}")
+@router.delete("/{todo_id}")
 async def delete_todo_by_id(todo_id: int) -> dict[str, str]:
     for index, t in enumerate(todosMock):
         if t.id == todo_id:
