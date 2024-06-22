@@ -1,12 +1,12 @@
 from typing import List
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
 
 
 class Todo(BaseModel):
-    id: int
-    text: str
-    completed: bool
+    id: int = Field(gt=0)
+    text: str = Field(min_length=1, max_length=100)
+    completed: bool = Field(default=False)
 
 
 app = FastAPI()
@@ -36,7 +36,7 @@ async def get_todo_by_id(todo_id: int) -> Todo | dict[str, str]:
     for todo in todosMock:
         if todo.id == todo_id:
             return todo
-    return {"message": "Todo not found"}
+    raise HTTPException(status_code=404, detail="Todo not found")
 
 
 @app.post("/todos")
@@ -51,7 +51,7 @@ async def update_todo_by_id(todo_id: int, todo: Todo) -> Todo | dict[str, str]:
         if t.id == todo_id:
             todosMock[index] = todo
             return todo
-    return {"message": "Todo not found"}
+    raise HTTPException(status_code=404, detail="Todo not found")
 
 
 @app.delete("/todos/{todo_id}")
@@ -60,4 +60,4 @@ async def delete_todo_by_id(todo_id: int) -> dict[str, str]:
         if t.id == todo_id:
             del todosMock[index]
             return {"message": "Todo deleted"}
-    return {"message": "Todo not found"}
+    raise HTTPException(status_code=404, detail="Todo not found")
