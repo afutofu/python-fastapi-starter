@@ -18,7 +18,7 @@ todos_mock: List[Todo] = [
 ]
 
 
-@router.get("/", response_model=List[Todo])
+@router.get("", response_model=List[Todo])
 async def get_todos() -> List[Todo]:
     return todos_mock
 
