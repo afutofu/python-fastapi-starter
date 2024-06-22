@@ -1,15 +1,15 @@
+from fastapi import APIRouter, HTTPException, status
 from typing import List
-from fastapi import APIRouter, HTTPException
 
 from ..models.todos import Todo
 
 router = APIRouter(
     prefix="/todos",
-    # tags=["items"],
-    # responses={404: {"description": "Not found"}},
+    tags=["todos"],
+    responses={404: {"description": "Not found"}},
 )
 
-todosMock: List[Todo] = [
+todos_mock: List[Todo] = [
     Todo(id=1, text="Buy milk", completed=False),
     Todo(id=2, text="Buy eggs", completed=True),
     Todo(id=3, text="Buy bread", completed=False),
@@ -18,38 +18,58 @@ todosMock: List[Todo] = [
 ]
 
 
-@router.get("/")
+@router.get("/", response_model=List[Todo])
 async def get_todos() -> List[Todo]:
-    return todosMock
+    return todos_mock
 
 
-@router.get("/{todo_id}")
+@router.get(
+    "/{todo_id}",
+    response_model=Todo,
+    responses={404: {"description": "Todo not found"}},
+)
 async def get_todo_by_id(todo_id: int) -> Todo | dict[str, str]:
-    for todo in todosMock:
-        if todo.id == todo_id:
-            return todo
-    raise HTTPException(status_code=404, detail="Todo not found")
-
-
-@router.post("")
-async def create_todo(todo: Todo) -> Todo:
-    todosMock.append(todo)
+    todo = next((todo for todo in todos_mock if todo.id == todo_id), None)
+    if todo is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found"
+        )
     return todo
 
 
-@router.put("/{todo_id}")
+@router.post("", response_model=Todo, status_code=status.HTTP_201_CREATED)
+async def create_todo(todo: Todo) -> Todo:
+    todos_mock.append(todo)
+    return todo
+
+
+@router.put(
+    "/{todo_id}",
+    response_model=Todo,
+    responses={404: {"description": "Todo not found"}},
+)
 async def update_todo_by_id(todo_id: int, todo: Todo) -> Todo | dict[str, str]:
-    for index, t in enumerate(todosMock):
-        if t.id == todo_id:
-            todosMock[index] = todo
-            return todo
-    raise HTTPException(status_code=404, detail="Todo not found")
+    index = next((i for i, t in enumerate(todos_mock) if t.id == todo_id), None)
+    if index is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found"
+        )
+    todos_mock[index] = todo
+    return todo
 
 
-@router.delete("/{todo_id}")
+@router.delete(
+    "/{todo_id}",
+    responses={
+        404: {"description": "Todo not found"},
+        200: {"description": "Todo deleted"},
+    },
+)
 async def delete_todo_by_id(todo_id: int) -> dict[str, str]:
-    for index, t in enumerate(todosMock):
-        if t.id == todo_id:
-            del todosMock[index]
-            return {"message": "Todo deleted"}
-    raise HTTPException(status_code=404, detail="Todo not found")
+    index = next((i for i, t in enumerate(todos_mock) if t.id == todo_id), None)
+    if index is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found"
+        )
+    del todos_mock[index]
+    return {"message": "Todo deleted"}
