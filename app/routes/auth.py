@@ -1,18 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from typing import List, Optional, Annotated
+from typing import Annotated
 from datetime import timedelta
-import jwt
-from jwt.exceptions import InvalidTokenError
 from pydantic import BaseModel
 
 from ..models.users import User, UserCreate, UserInDB
 from ..utils import (
     authenticate_user,
+    blacklist_token,
     create_access_token,
     fake_users_db,
-    SECRET_KEY,
-    ALGORITHM,
     ACCESS_TOKEN_EXPIRE_MINUTES,
     get_password_hash,
     get_user,
@@ -29,30 +26,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 class Token(BaseModel):
     access_token: str
     token_type: str
-
-
-class TokenData(BaseModel):
-    username: str | None = None
-
-
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-        token_data = TokenData(username=username)
-    except InvalidTokenError:
-        raise credentials_exception
-    user = get_user(fake_users_db, username=token_data.username)
-    if user is None:
-        raise credentials_exception
-    return user
 
 
 @router.post("/register", response_model=User)
@@ -93,6 +66,6 @@ async def login_for_access_token(
 
 
 @router.post("/logout")
-async def logout():
-    # In a real application, you would handle token blacklisting here
+async def logout(token: str = Depends(oauth2_scheme)):
+    blacklist_token(token)
     return {"message": "Logout successful"}
