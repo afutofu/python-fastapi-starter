@@ -1,5 +1,8 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
+
+from app.dependencies import get_current_user
+from app.models.users import UserInDB
 
 from ..models.todos import Todo
 
@@ -19,7 +22,7 @@ todos_mock: List[Todo] = [
 
 
 @router.get("", response_model=List[Todo])
-async def get_todos() -> List[Todo]:
+async def get_todos(current_user: UserInDB = Depends(get_current_user)) -> List[Todo]:
     return todos_mock
 
 
