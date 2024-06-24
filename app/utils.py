@@ -1,6 +1,8 @@
 import jwt
 from datetime import datetime, timedelta
 from typing import List, Optional
+
+from app.models.todos import TodoInDB
 from .models.users import User, UserInDB
 from passlib.context import CryptContext
 
@@ -8,10 +10,32 @@ SECRET_KEY = "your_secret_key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 5
 
-fake_users_db: List[UserInDB] = []
-token_blacklist = set()  # Store blacklisted token
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+
+fake_todo_db: List[TodoInDB] = [
+    TodoInDB(id=1, text="Buy milk", completed=False),
+    TodoInDB(id=2, text="Buy eggs", completed=True),
+    TodoInDB(id=3, text="Buy bread", completed=False),
+    TodoInDB(id=4, text="Buy butter", completed=True),
+    TodoInDB(id=5, text="Buy sugar", completed=False),
+]
+next_todo_id: int = len(fake_todo_db) + 1
+
+
+fake_users_db: List[UserInDB] = [
+    UserInDB(
+        id=1, username="string", hashed_password=get_password_hash("string")
+    )  # password: string
+]
+next_user_id: int = len(fake_users_db) + 1
+
+token_blacklist = set()  # Store blacklisted token
 
 
 def verify_password(plain_password, hashed_password):

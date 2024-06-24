@@ -10,9 +10,9 @@ from ..utils import (
     blacklist_token,
     create_access_token,
     fake_users_db,
+    next_user_id,
     ACCESS_TOKEN_EXPIRE_MINUTES,
     get_password_hash,
-    get_user,
 )
 
 router = APIRouter(
@@ -37,12 +37,14 @@ async def register_user(user: UserCreate):
                 detail="Username already registered",
             )
     hashed_password = get_password_hash(user.password)
+    global next_user_id
     user_in_db = UserInDB(
-        id=len(fake_users_db) + 1,
+        id=next_user_id,
         username=user.username,
         hashed_password=hashed_password,
     )
     fake_users_db.append(user_in_db)
+    next_user_id += 1
     print(fake_users_db)
     return user_in_db
 
