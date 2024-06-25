@@ -30,6 +30,18 @@ class Token(BaseModel):
 
 @router.post("/register", response_model=User)
 async def register_user(user: UserCreate):
+    """Registers a new user.
+
+    Args:
+        user (UserCreate): The user details for registration.
+
+    Raises:
+        HTTPException: If the username is already registered.
+
+    Returns:
+        User: The registered user.
+    """
+
     for user_in_db in fake_users_db:
         if user.username == user_in_db.username:
             raise HTTPException(
@@ -45,7 +57,6 @@ async def register_user(user: UserCreate):
     )
     fake_users_db.append(user_in_db)
     next_user_id += 1
-    print(fake_users_db)
     return user_in_db
 
 
@@ -53,6 +64,18 @@ async def register_user(user: UserCreate):
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ):
+    """Logs in a user and returns an access token.
+
+    Args:
+        form_data (OAuth2PasswordRequestForm): The form data containing username and password.
+
+    Raises:
+        HTTPException: If the username or password is incorrect.
+
+    Returns:
+        Token: The access token and token type.
+    """
+
     user = authenticate_user(fake_users_db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -69,5 +92,14 @@ async def login_for_access_token(
 
 @router.post("/logout")
 async def logout(token: str = Depends(oauth2_scheme)):
+    """Logs out a user by blacklisting the access token.
+
+    Args:
+        token (str): The JWT token of the user.
+
+    Returns:
+        dict: A message indicating that the logout was successful.
+    """
+
     blacklist_token(token)
     return {"message": "Logout successful"}
