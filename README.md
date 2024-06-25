@@ -1,10 +1,10 @@
 # Python FastAPI Starter
 
-Starter implementation of authentication and todo RESTful APIs in Python FastAPI.
+This branch includes a starter implementation of an auth API in Python FastAPI.
 
 Access other branches to find more modular implementations of authentication and todo APIs:
 
-- [rest-auth](https://github.com/afutofu/python-fastapi-starter/tree/rest-auth): Auth API
+- [main](https://github.com/afutofu/python-fastapi-starter): Both Auth and Todo API
 - [rest-todo](https://github.com/afutofu/python-fastapi-starter/tree/rest-todo): Todo API
 
 ## Table of Contents
@@ -21,11 +21,6 @@ Access other branches to find more modular implementations of authentication and
 - User registration
 - User login
 - User logout
-- Create a todo
-- Get all todos
-- Get a todo by ID
-- Update a todo by ID
-- Delete a todo by ID
 
 ## Endpoints
 
@@ -34,15 +29,6 @@ Access other branches to find more modular implementations of authentication and
 - `POST /auth/register` - Register a new user
 - `POST /auth/token` - Login a user
 - `POST /auth/logout` - Logout a user
-
-### Todo
-
-- `POST /todos` - Create a new todo
-- `GET /todos` - Get all todos
-- `GET /todos/{id}` - Get a todo by ID
-- `PUT /todos/{id}` - Update a todo by ID
-- `DELETE /todos/{id}` - Delete a todo by ID
-  I
 
 ## Setup
 
@@ -86,38 +72,6 @@ Logout user:
 
 ```bash
 curl -X POST http://localhost:8000/auth/logout
-```
-
-### Todo
-
-Create a Todo:
-
-```bash
-curl -X POST http://localhost:8000/todos -H "Content-Type: application/json" -d '{"text":"Test Todo", "completed":false}'
-```
-
-Get All Todos:
-
-```bash
-curl -X GET http://localhost:8000/todos
-```
-
-Get a Todo by ID:
-
-```bash
-curl -X GET http://localhost:8000/todos/1
-```
-
-Update a Todo by ID:
-
-```bash
-curl -X PUT http://localhost:8000/todos/1 -H "Content-Type: application/json" -d '{"text":"Updated Todo", "completed":true}'
-```
-
-Delete a Todo by ID:
-
-```bash
-curl -X DELETE http://localhost:8000/todos/1
 ```
 
 ## Access OpenAPI UI
