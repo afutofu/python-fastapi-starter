@@ -5,7 +5,7 @@ from app.dependencies import get_current_user
 from app.models.users import UserInDB
 
 from ..models.todos import Todo, TodoInDB
-from ..utils import fake_todo_db, next_todo_id
+from ..crud import todos as todos_crud
 
 router = APIRouter(
     prefix="/todos",
@@ -18,7 +18,7 @@ router = APIRouter(
 async def get_todos(
     current_user: UserInDB = Depends(get_current_user),
 ) -> List[TodoInDB]:
-    return fake_todo_db
+    return todos_crud.get_todos()
 
 
 @router.get(
@@ -29,7 +29,7 @@ async def get_todos(
 async def get_todo_by_id(
     todo_id: int, current_user: UserInDB = Depends(get_current_user)
 ) -> TodoInDB | dict[str, str]:
-    todo = next((todo for todo in fake_todo_db if todo.id == todo_id), None)
+    todo = todos_crud.get_todo_by_id(todo_id)
     if todo is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found"
@@ -41,12 +41,7 @@ async def get_todo_by_id(
 async def create_todo(
     todo: Todo, current_user: UserInDB = Depends(get_current_user)
 ) -> TodoInDB:
-    global next_todo_id
-    print(next_todo_id, todo.text, todo.completed)
-    todo_in_db = TodoInDB(id=next_todo_id, text=todo.text, completed=todo.completed)
-    fake_todo_db.append(todo_in_db)
-    next_todo_id += 1
-    return todo_in_db
+    return todos_crud.create_todo(todo)
 
 
 @router.put(
@@ -57,14 +52,12 @@ async def create_todo(
 async def update_todo_by_id(
     todo_id: int, todo: Todo, current_user: UserInDB = Depends(get_current_user)
 ) -> TodoInDB | dict[str, str]:
-    index = next((i for i, t in enumerate(fake_todo_db) if t.id == todo_id), None)
-    if index is None:
+    updated_todo = todos_crud.update_todo_by_id(todo_id, todo)
+    if updated_todo is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found"
         )
-    todo_in_db = TodoInDB(id=todo_id, **todo.model_dump())
-    fake_todo_db[index] = todo_in_db
-    return todo_in_db
+    return updated_todo
 
 
 @router.delete(
@@ -77,10 +70,9 @@ async def update_todo_by_id(
 async def delete_todo_by_id(
     todo_id: int, current_user: UserInDB = Depends(get_current_user)
 ) -> dict[str, str]:
-    index = next((i for i, t in enumerate(fake_todo_db) if t.id == todo_id), None)
-    if index is None:
+    deleted_todo = todos_crud.delete_todo_by_id(todo_id)
+    if deleted_todo is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found"
         )
-    del fake_todo_db[index]
     return {"message": "Todo deleted"}
