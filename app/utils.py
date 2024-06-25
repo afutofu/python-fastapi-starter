@@ -2,7 +2,6 @@ import jwt
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-from app.models.todos import TodoInDB
 from .models.users import User, UserInDB
 from passlib.context import CryptContext
 
@@ -16,16 +15,6 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def get_password_hash(password):
     return pwd_context.hash(password)
-
-
-fake_todo_db: List[TodoInDB] = [
-    TodoInDB(id=1, text="Buy milk", completed=False),
-    TodoInDB(id=2, text="Buy eggs", completed=True),
-    TodoInDB(id=3, text="Buy bread", completed=False),
-    TodoInDB(id=4, text="Buy butter", completed=True),
-    TodoInDB(id=5, text="Buy sugar", completed=False),
-]
-next_todo_id: int = len(fake_todo_db) + 1
 
 
 fake_users_db: List[UserInDB] = [
