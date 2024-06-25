@@ -1,9 +1,10 @@
 # Python FastAPI Starter
 
-Starter implementation of authentication and todo RESTful APIs in Python FastAPI.
+This branch includes a starter implementation of a todo API in Python FastAPI.
 
 Access other branches to find more modular implementations of authentication and todo APIs:
 
+- [main](https://github.com/afutofu/python-fastapi-starter): Auth & Todo API
 - [rest-auth](https://github.com/afutofu/python-fastapi-starter/tree/rest-auth): Auth API
 - [rest-todo](https://github.com/afutofu/python-fastapi-starter/tree/rest-todo): Todo API
 
@@ -18,9 +19,6 @@ Access other branches to find more modular implementations of authentication and
 
 ## Features
 
-- User registration
-- User login
-- User logout
 - Create a todo
 - Get all todos
 - Get a todo by ID
@@ -28,12 +26,6 @@ Access other branches to find more modular implementations of authentication and
 - Delete a todo by ID
 
 ## Endpoints
-
-### Authentication
-
-- `POST /auth/register` - Register a new user
-- `POST /auth/token` - Login a user
-- `POST /auth/logout` - Logout a user
 
 ### Todo
 
@@ -66,27 +58,6 @@ Access other branches to find more modular implementations of authentication and
    ```
 
 ## Usage
-
-### Authentication
-
-Register a user:
-
-```bash
-curl -X POST http://localhost:8000/auth/register -H "Content-Type: application/json" -d '{"username":"testuser", "password":"password123"}'
-```
-
-Login:
-
-```bash
-curl -X POST http://localhost:8000/auth/login -H "Content-Type: application/json" -d '{"username":"testuser", "password":"password123"}'
-
-```
-
-Logout user:
-
-```bash
-curl -X POST http://localhost:8000/auth/logout
-```
 
 ### Todo
 

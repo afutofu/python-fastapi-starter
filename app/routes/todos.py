@@ -1,9 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
 
-from app.dependencies import get_current_user
-from app.models.users import UserInDB
-
 from ..models.todos import Todo, TodoInDB
 from ..crud import todos as todos_crud
 
@@ -15,9 +12,7 @@ router = APIRouter(
 
 
 @router.get("", response_model=List[TodoInDB])
-async def get_todos(
-    current_user: UserInDB = Depends(get_current_user),
-) -> List[TodoInDB]:
+async def get_todos() -> List[TodoInDB]:
     """Retrieves all todo items.
 
     Returns:
@@ -33,7 +28,7 @@ async def get_todos(
     responses={404: {"description": "Todo not found"}},
 )
 async def get_todo_by_id(
-    todo_id: int, current_user: UserInDB = Depends(get_current_user)
+    todo_id: int,
 ) -> TodoInDB | dict[str, str]:
     """Fetches a todo item by its ID.
 
@@ -63,7 +58,7 @@ async def get_todo_by_id(
     },
 )
 async def create_todo(
-    todo: Todo, current_user: UserInDB = Depends(get_current_user)
+    todo: Todo,
 ) -> TodoInDB:
     """Creates a new todo item.
 
@@ -83,7 +78,8 @@ async def create_todo(
     responses={404: {"description": "Todo not found"}},
 )
 async def update_todo_by_id(
-    todo_id: int, todo: Todo, current_user: UserInDB = Depends(get_current_user)
+    todo_id: int,
+    todo: Todo,
 ) -> TodoInDB | dict[str, str]:
     """Updates a todo item by its ID.
 
@@ -111,7 +107,7 @@ async def update_todo_by_id(
     },
 )
 async def delete_todo_by_id(
-    todo_id: int, current_user: UserInDB = Depends(get_current_user)
+    todo_id: int,
 ) -> dict[str, str]:
     """Deletes a todo item by its ID.
 
