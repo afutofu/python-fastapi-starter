@@ -6,7 +6,6 @@ Access other branches to find more modular implementations of authentication and
 
 - [main](https://github.com/afutofu/python-fastapi-starter): Auth & Todo API
 - [rest-auth](https://github.com/afutofu/python-fastapi-starter/tree/rest-auth): Auth API
-- [rest-todo](https://github.com/afutofu/python-fastapi-starter/tree/rest-todo): Todo API
 
 ## Table of Contents
 
