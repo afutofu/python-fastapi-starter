@@ -64,7 +64,7 @@ curl -X POST http://localhost:8000/auth/register -H "Content-Type: application/j
 Login:
 
 ```bash
-curl -X POST http://localhost:8000/auth/login -H "Content-Type: application/json" -d '{"username":"testuser", "password":"password123"}'
+curl -X POST http://localhost:8000/auth/token -H "Content-Type: application/json" -d '{"username":"testuser", "password":"password123"}'
 
 ```
 
