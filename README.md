@@ -62,7 +62,7 @@ Access other branches to find more modular implementations of authentication and
 3. Run the server:
 
    ```bash
-    uvicorn folder.main:app --reload
+   uvicorn folder.main:app --reload
    ```
 
 ## Usage
